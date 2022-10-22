@@ -1,0 +1,61 @@
+---
+title: "Untitled"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+install.packages('remotes')
+install.packages("astsa")
+
+library(astsa)
+
+soi
+```
+
+
+
+```{r}
+n = length(soi)
+AIC = rep(0, 30)
+AICc= rep(0,30)
+BIC=  rep(0,30)
+for (k in 1:30)
+  {
+variance = ar(soi, order=k, aic=FALSE)$var.pred
+AIC[k] = log(variance) + ((n+2*k)/n)
+BIC[k] = log(variance) + (k*log(n)/n)
+AICc[k] = log(variance) + ((n+k)/(n-k-2))
+
+}
+IC = cbind(AIC,BIC,AICc)
+ts.plot(IC, type="o", xlab="p", ylab="AIC/BIC/AICc")
+
+AIC
+AICc
+BIC
+
+#From the row we see that AIC and AICc almost have the same value.
+#Since AIC and AICc are quite identical to each other, we might want to shift them.(I.e,shift AIC to obtain a more clear graph)
+
+IC_shifted=cbind(AIC-0.5, BIC,AICc)
+
+ts.plot(IC_shifted, type="o", xlab="p", ylab="AIC/BIC/AICc")
+grid(nx=6,ny=7,col="grey",lty=2,lwd=2)
+
+#As we can see, the all 3 curves tend to obtain minimum at p=15
+```
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
