@@ -1,0 +1,47 @@
+---
+title: "STA457TUT3"
+author: "Alex Wang"
+date: "2022/2/11"
+output:
+  pdf_document: default
+  html_document: default
+---
+# Part a
+```{r}
+#read the file into a vector:
+ground_water<-scan(file="anatolia_hati.txt")
+str(ground_water)
+#Convert the string into a time series, starting at 1975,ending at 2004.Since we have 360 observations,it is a monthly recorded report.
+ground_water<-ts(ground_water,start=1975,frequency=12)
+str(ground_water)
+
+#We test whether the interpretation is accurate.
+end(ground_water)
+```
+```{r}
+#print the time series
+print(ground_water)
+```
+
+```{r}
+time(ground_water)
+```
+```{r}
+cycle(ground_water)
+```
+
+# Part b
+
+```{r}
+frequency(ground_water)
+
+deltat(ground_water)
+```
+# Part c
+
+```{r}
+
+plot(window(ground_water,start=c(1990,4),end=c(1993,3)),type="o",ylab="depth of the water(m)",main="depth cycle from 1990/4 to 1993/3")
+```
+The annual behaviour is similar for 3 years:goes up from January, reach highest at May and June,goes down for the whole second half of the year.
+
