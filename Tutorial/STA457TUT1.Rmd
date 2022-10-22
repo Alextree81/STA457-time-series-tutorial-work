@@ -1,0 +1,82 @@
+---
+title: "STA457PS1"
+author: "Shu Wang"
+date: "2022/1/20"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+
+
+
+```{r}
+set.seed(457)
+#set a seed number
+s1=c(rep(0,100), 10*exp(-(1:100)/20)*cos(2*pi*(1:100)/4))
+
+# generate s1 as required
+x1=ts(s1+rnorm(200))
+# generate x1 based on s1
+plot.ts(x1,main="plot on Q1",col="blue",ylab="x1")
+#plot x1
+```
+
+```{r}
+set.seed(457)
+s2=c(rep(0,100), 10*exp(-(1:100)/200)*cos(2*pi*(1:100)/4))
+#generate s2
+
+x2=ts(s1+rnorm(200))
+# generate x2
+plot.ts(x2,main="plot on Q2",col="blue",ylab="x2")
+# plot against x2
+```
+
+
+```{r}
+#Q3
+#The 2 graphs looks similar in the behavior. They were both oscillating around a fixed range from -3 to 3 for 0<=x<=100 and x>=150. For 100<=x<=150, the range extend to nearly the boundary of the cosine function,approximately -10 to 10.
+```
+
+```{r}
+#Q4
+t1=c(exp(-(1:100)/20))
+t2=c(exp(-(1:100)/200))
+plot(t1,type="l",col="red")
+par(new=TRUE)
+plot(t2,type="l",col="blue")
+```
+For comparison,t1 tends to be more flat while t2 tends to be more like a straight line.
+
+```{r}
+#Q5
+set.seed(457)
+#set a seed number
+ux1=c(rep(0,100), 10*exp(-(1:100)/20)*cos(2*pi*(1:100)/4))
+
+# calculate mean of x1
+plot.ts(ux1,main="mean of x1",col="blue",ylab="ux1")
+#plot mean of x1
+```
+
+```{r}
+#Q5
+set.seed(457)
+#set a seed number
+ux2=c(rep(0,100), 10*exp(-(1:100)/200)*cos(2*pi*(1:100)/4))
+
+# calculate mean of x2
+plot.ts(ux2,main="mean of x2",col="blue",ylab="ux2")
+#plot mean of x1
+```
+
