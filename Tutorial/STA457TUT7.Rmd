@@ -1,0 +1,127 @@
+---
+title: "STA457TUT7"
+author: "Shu Wang"
+date: '2022-03-30'
+output: pdf_document
+---
+
+
+```{r}
+install.packages('astsa')
+library('astsa')
+data(globtemp)
+```
+## (a)
+
+A process $x_t$ is said to be ARIMA(p,d,q) if:
+
+$\bigtriangledown^{k}x_t = (1-B)^{d}x_t$
+
+is ARMA(p,q).
+
+The model is written as: $\phi(B)(1-B)^{d}x_t = \alpha + \theta(B)\omega_t$
+where $\alpha = \delta(1-\phi_1-...-\phi_p)$ and $\delta = E(\bigtriangledown^{k}x_t)$
+
+After differencing,AR and MA dependence structures may exist: ARIMA(p, d ,q)
+– p : AR(p) – value at time t depends on previous p values)
+– d : # of differences (need to take d
+th difference to make stationary)
+– q : MA(q) – value at time t depends on previous q random shocks)
+
+
+
+```{r}
+layout(1:2,heights = 2:1)
+tsplot(globtemp, col = 4)
+acf(globtemp,lag.max = 50)
+pacf(globtemp,lag.max = 50)
+```
+
+
+Since many of the values are below 0,it is not appropriate to perform a log transformation on the data.Instead,we can do differencing on the data.
+
+
+
+
+```{r}
+
+z1 = diff(globtemp)
+plot(z1)
+abline(h = mean(z1),col = 6)
+acf(z1, 20)
+pacf(z1,20)
+```
+
+
+
+```{r}
+install.packages('lmtest')
+library('lmtest')
+```
+
+We perform a augmented dickey-fuller test to test the stationary of the first-order differencing time series.
+```{r}
+install.packages('tseries')
+library(tseries)
+
+#perform augmented Dickey-Fuller test 
+adf.test(z1)
+```
+
+We have strong evidence against the null hypothesis that the process is non-stationary.
+
+We can see that ACF is cutting off at lag 2 and the PACF is tailing off. This would suggest the globtemp follows an MA(2) process, or diff(globtemp) follows an ARIMA(0, 1, 2) model. 
+
+Rather than focus on one model, we will also suggest that it appears that the 
+ACF is tailing off and the PACF is cutting off at lag 3.
+
+This suggests an AR(3) model for the globtemp, or ARIMA(3, 1, 0) for z1. 
+
+## (b)
+
+```{r}
+install.packages("forecast")
+library(forecast)
+
+```
+
+
+```{r}
+sarima(globtemp,p=0,d=1,q=2)
+```
+```{r}
+sarima(globtemp,p=3,d=1,q=0)
+```
+
+We now have two models,with ARIMA(0,1,2) and ARIMA(3,1,0) separately.
+
+For the ARIMA(0,1,2) model,the p_value for all MA parameters are <0.05. At 5% significance level,we have strong evidence against the null hypothesis that the parameter $\theta_1$,$theta_2$ and the constant term is 0.
+
+For the ARIMA(3,1,0) model,the p_value for all AR parameters(except the constant term) are <0.05.At 5% significance level,we have strong evidence against the null hypothesis that the parameter $\phi_1$,$phi_2$,$\phi_3$ are 0. The p_value for constant term is 0.10. At 5% significance level,we can conclude that the constant term is 0.
+
+## (c)
+
+Residual diagnostic check:
+
+If the model fits well, the standardized residuals should behave as an iid sequence with mean zero and variance one.As we can see from sarima results in part(b),the residuals appears to be i.i.d with mean 0 and variance 1,the QQ-plot also indicates the normality of the residuals are hold.The Q test also shows that there's no apparent autocorrelation left in the residuals for both models.
+
+We reserve the constant in the ARIMA(0,1,2) model,since the constant is significant.
+
+## (d)
+
+To choose the final model, we compare the AIC, the AICc, and the BIC for
+both models. The AIC,AICc and BIC for ARIMA(0,1,2) is lower,which suggests we prefer the ARIMA(0,1,2) model.
+
+```{r}
+prediction<-sarima.for(globtemp, n.ahead = 10, p=0, d=1, q=2)
+```
+
+```{r}
+predict = as.numeric(prediction$pred)
+CI_lower = as.numeric(prediction$pred - qnorm(0.95) * prediction$se)
+CI_upper = as.numeric(prediction$pred + qnorm(0.95) * prediction$se)
+Year = c("2016","2017","2018","2019","2020","2021","2022","2023","2024","2025")
+my_data <- data.frame(Year,predict,CI_lower,CI_upper)
+my_data
+```
+

@@ -1,0 +1,88 @@
+---
+title: "STA457TUT8"
+author: "Shu Wang"
+date: "2022/4/4"
+output: pdf_document
+---
+
+```{r}
+
+library('astsa')
+data(salt)
+```
+
+# (a)
+```{r}
+tsplot(salt,type = 'o',col = 'blue')
+```
+
+```{r}
+n = length(salt)
+par(mfrow = c(2,1),mar = c(3,3,1,1),mgp = c(1.6,0.6,0))
+Per = Mod(fft(salt-mean(salt)))^2/n
+Freq = (1:n -1)/n
+plot(Freq[1:50],Per[1:50],type = 'h',lwd = 3,ylab = 'Periodogram',xlab = 'Frequency')
+
+```
+```{r}
+y = cbind(1:50,Freq[1:50],Per[1:50])
+y<-y[order(y[,3]),]
+y
+```
+
+We see that 1/freq(5) = 16 day cycle and 1/freq(4) = 21.333 day cycle and 1/freq(8) = 9.143 day cycle are the most prominent periodic components of the data.
+
+# (b)
+
+```{r}
+salt.per = mvspec(salt,log = 'no')
+abline(v = 0.063,lty = 2)
+abline(v = 0.11,lty = 2)
+```
+
+We notice a narrow-band peak at $\omega = 0.063\Delta = 5.25* 10^{-3}$,The occurring years is $1/0.063 = 15.87$ years.
+
+```{r}
+nextn(length(salt))
+```
+
+
+# (c)
+
+
+
+```{r}
+P2<-salt.per$details[order(salt.per$details[,3],decreasing = TRUE),]
+P2[1,];P2[2,];P2[3,]
+```
+
+
+
+
+```{r}
+U =qchisq(0.05,2)
+L =qchisq(0.95,2)
+
+##90% CIs for the dominant frequencies for saltemp series in part(a)
+salt.u1 = 2*P2[1,3]/U
+salt.l1 = 2*P2[1,3]/L
+salt.u2 = 2*P2[2,3]/U
+salt.l2 = 2*P2[2,3]/L
+salt.u3 = 2*P2[3,3]/U
+salt.l3 = 2*P2[3,3]/L
+##Create a data frame for the CIs
+Result <- data.frame(Series=c(rep("salt",3)),
+Dominant.Freq=c(P2[1,1],P2[2,1],P2[3,1]), Spec=c(P2[1,3],P2[2,3],
+P2[3,3]),
+Lower=c(salt.l1,salt.l2,salt.l3),
+Upper=c(salt.u1,salt.u2,salt.u3))
+Result[1:2,3:5] = round(Result[1:2,3:5], 4)
+Result
+
+```
+
+We cannot establish the significance of the first peak since the periodogram ordinate is 60.67, which lies in the confidence intervals of the second and third peak.
+
+We cannot establish the significance of the second peak since the periodogram ordinate is 33.49, which lies in the confidence interval of the first and third peak.
+
+We cannot establish the significance of the third peak since the periodogram ordinate is 23.69, which lies in the confidence interval of the first and second  peak.
