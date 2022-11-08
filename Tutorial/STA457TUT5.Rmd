@@ -1,0 +1,73 @@
+---
+title: "STA457TUT5"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+For an AR(2) process, we have that:
+
+$$x_t = \phi_1 x_{t-1} + \phi_2 x_{t-2} + w_t $$ 
+
+In our case, $\phi_1 = 1.5$, $\phi_2 = -0.75$ .
+
+The difference equation for the ACF of the process is:
+
+$$\rho(h)-\phi_1\rho(h-1)-\phi_2\rho(h-2) = 0 $$.
+
+So we have a difference equation:
+
+$$\rho(h)-1.5\rho(h-1)+0.75\rho(h-2) = 0 $$
+
+Solve for general expression of $\rho(h)$. Let $z_1$and $z_2$ be the roots of the associated polynomial:
+
+$$\phi(z) = 1-\phi_1z - \phi_2z^2$$
+
+$$\phi(z) = 1-1.5z + 0.75z^2$$
+
+where $z_1 = 1+i\sqrt3/3$, $z_2 = 1-i\sqrt3/3$.
+
+The general solutions are:
+
+$$\rho(h) = c_1z_1^{-h} + c_2z_2^{-h} $$
+For initial conditions, $$\rho(0) = c_1+c_2 = 1$$
+$$\rho(-1) = c_1z_1 + c_2z_2 = \phi_1/(1-\phi_2) = 6/7 $$
+
+We solve that :
+$c_1 = 1/2+(\sqrt3/14)i$, $c_2 = 1/2-(\sqrt3/14)i$
+
+The general solution is given by:
+
+$$\rho(h) = (1/2+(\sqrt3/14)i)(1+(\sqrt3/3)i)^{-h} + (1/2-(\sqrt3/14)i)(1-(\sqrt3/3)i)^{-h} $$
+
+We use a loop to calculate the given recurrence relation.
+  
+```{r}
+loop <- function(n){
+  
+  a <- 1
+  b <- 6/7
+  for (i in 2:n){
+    a_new <- b
+    b <- 1.5*b - 0.75*a
+    a <- a_new
+  }
+  return(b)
+}
+```
+
+```{r}
+ACF<-c(1,6/7,loop(2),loop(3),loop(4),loop(5),loop(6),loop(7),loop(8),loop(9),loop(10))
+X<-c(0:10)
+plot(X,ACF,type = "h",col = "blue")
+abline(h=0)
+```
+We use ARMAacf function to check the value we calculated.
+
+
+```{r}
+ACF_r = ARMAacf(ar= c(1.5,-0.75),ma=0,10)
+plot(ACF_r,type = "h",xlab = "lag",col = "red")
+abline(h=0)
+```
+
