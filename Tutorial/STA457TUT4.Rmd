@@ -1,0 +1,71 @@
+---
+title: "STA457tutorial 4"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+
+```{r}
+set.seed(1221)
+sqrt_SSE = c()
+R_2 = c()
+AIC_ = c()
+BIC_ = c()
+n = 500
+delta = 0.2
+time = 1:n
+par(mfrow=c(2,2), mar=c(2.5,2.5,0.5,0)+0.5, mgp=c(1.6,0.6,0)) #setup
+for (i in 1:50){
+  w_b = rnorm(n, 0, sqrt(2))
+  y = delta * time + w_b #data
+  mu_b = delta*time #true mean function
+  fit_b = lm(y~0 + time) #regression
+  min_yb = floor(min(y)); max_yb = ceiling(max(y)) #sets y-axis limit
+  
+  sqrt_SSE[i] = (sum((fitted(fit_b) - y)^2))^(1/2)
+  R_2[i] = 100 * summary(fit_b)$r.squared
+
+  AIC_[i] = AIC(fit_b)
+  BIC_[i] = BIC(fit_b)
+  
+}
+
+
+```
+
+
+
+
+```{r}
+head(sqrt_SSE,5)
+head(R_2,5)
+plot(sqrt_SSE,type = "l",main = "square root of SSE and R^2", ylab = "",col = "blue",ylim = c(30,100))
+lines(R_2,col = "red")
+
+legend(x = 35, y = 70, # Coordinates
+       legend = c("sqrt of SSE", "R^2"),
+       lty = c(1, 1),
+       col = c("blue", "red"),
+       lwd = 2)
+
+```
+
+```{r}
+head(AIC_,5)
+head(BIC_,5)
+plot(AIC_,type = "l",main = "AIC_ and BIC_", ylab = "",col = "blue")
+lines(BIC_,col = "red")
+
+legend(x = 40, y = 1740, # Coordinates
+       legend = c("AIC", "BIC"),
+       lty = c(1, 1),
+       col = c("blue", "red"),
+       lwd = 2)
+```
+
+
