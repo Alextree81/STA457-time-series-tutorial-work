@@ -1,0 +1,90 @@
+---
+title: "STA457TUT6"
+author: "Shu Wang"
+date: "2022/2/12"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+```{r}
+set.seed(111)
+ar1 = c()
+ma1 = c()
+sigma2 = c()
+for (i in 1:10){
+z <- arima.sim(model = list(ar = c(-0.5), ma = c(-0.9)), 
+    n = 500)
+AR <- arima(z, order = c(1,0,1))
+ar1[i] = coef(AR)[1]
+ma1[i] = coef(AR)[2]
+sigma2[i] = AR$sigma2
+
+}
+
+```
+
+
+```{r}
+ar1_ = matrix(ar1)
+colnames(ar1_) <- c("estimated_phi" )
+true_phi <- c(-0.5)
+ar_1 <- rbind(true_phi,ar1_)
+rownames(ar_1) <- c("true_phi","sim1","sim2","sim3","sim4","sim5","sim6","sim7","sim8","sim9","sim10")
+```
+
+
+```{r}
+ar1_ = matrix(ar1)
+colnames(ar1_) <- c("estimated_phi" )
+true_parameter <- c(-0.5)
+ar_1 <- rbind(true_parameter,ar1_)
+rownames(ar_1) <- c("true_parameter","sim1","sim2","sim3","sim4","sim5","sim6","sim7","sim8","sim9","sim10")
+```
+
+
+```{r}
+ma1_ = matrix(ma1)
+colnames(ma1_) <- c("estimated_theta" )
+true_parameter <- c(-0.9)
+ma_1 <- rbind(true_parameter,ma1_)
+rownames(ma_1) <- c("true_parameter","sim1","sim2","sim3","sim4","sim5","sim6","sim7","sim8","sim9","sim10")
+```
+
+```{r}
+sigma2_ = matrix(sigma2)
+colnames(sigma2_) <- c("estimated_sigma2" )
+true_parameter <- c(1)
+sigma_2 <- rbind(true_parameter,sigma2_)
+rownames(sigma_2) <- c("true_parameter","sim1","sim2","sim3","simu4","sim5","sim6","sim7","sim8","sim9","sim10")
+```
+
+```{r}
+do.call(cbind, list(ar_1, ma_1,sigma_2))
+```
+
+
+
+
+```{r}
+plot(ar1_,xlab = "estimated_phi",col = "blue")
+abline(h = -0.5)
+```
+
+```{r}
+plot(ma1_,xlab = "estimated_theta",col = "blue")
+abline(h = -0.9)
+```
+
+```{r}
+plot(sigma2_,xlab = "estimated_sigma2",col = "blue")
+abline(h = 1)
+```
+
+The conclusion is that the estimated values are randomly distributed around the true parameters taken(phi = -0.5,theta = -0.9,sigma2 = 1).There's no pattern of relationship between the estimates, which indicates that the observations taken are identical and independent distribution.
+
+
+
